@@ -46,23 +46,23 @@
 
 2. Архитектура и стек
 
-2.1 OrderService
+2.1. OrderService
 
 Ответственен за REST API заказов, Transactional Outbox, Consumer PaymentResult.
 Реализовано с помощью .NET 9, EF Core 9.0.1, Npgsql 9.0.4, RabbitMQ.Client
 
-2.2 PaymentsService
+2.2. PaymentsService
 
 Ответственен за REST API счетов, Transactional Inbox/Outbox, idempotent debit.
 Стек тот же что и в предыдущем пункте
 
-2.3 RabbitMQ (rabbitmq:3.13-management)
+2.3. RabbitMQ (rabbitmq:3.13-management)
 Ответственен за шину сообщений, фан-аут exchange, shop.payments -> shop.orders.
 
-2.4 PostgreSQL (postgres:16)
+2.4. PostgreSQL (postgres:16)
 Ответственен за хранение заказов, счетов, outbox-таблиц.
 
-2.5 Frontend
+2.5. Frontend
 React-SPA; позволяет пополнить счет, создать заказ, наблюдать статусы заказов
 Реализовано с помощью React 18, Vite 5, Node 20, Nginx 1.25
 
@@ -70,7 +70,7 @@ React-SPA; позволяет пополнить счет, создать зак
 
 3. Документация к API
 
-3.1 Статусы
+3.1. Статусы
 
 0 - NEW
 
@@ -78,39 +78,39 @@ React-SPA; позволяет пополнить счет, создать зак
 
 2 - CANCELLED (REJECTED)
 
-3.2 Payments API
+3.2. Payments API
 
-3.2.1 POST/accounts (создать счет; идемпотентно)
+3.2.1. POST/accounts (создать счет; идемпотентно)
 
 тело: userId={guid}
 ответ: 201
 
-3.2.2 GET/accounts/{userId} (баланс счета)
+3.2.2. GET/accounts/{userId} (баланс счета)
 
 тело: -
 ответ: { userId, balance }
 
-3.2.3 POST/accounts/{userId}/top-up (пополнить счет, возвращает новый баланс)
+3.2.3. POST/accounts/{userId}/top-up (пополнить счет, возвращает новый баланс)
 
 тело: amount=double
 ответ: 200; double
 
 
-3.3 Orders API
+3.3. Orders API
 
-3.3.1 POST/orders (создать заказ; статус = NEW)
+3.3.1. POST/orders (создать заказ; статус = NEW)
 
 тело: { userId, amount, description }
 ответ: 200; guid 
 
 
-3.3.2 GET/orders (получение всех заказов)
+3.3.2. GET/orders (получение всех заказов)
 
 тело: -
 ответ: [{ id, amount, description, status }]
 
 
-3.3.3 GET/orders/{id} (получение деталей заказа)
+3.3.3. GET/orders/{id} (получение деталей заказа)
 
 тело: -
 ответ: { ... }
