@@ -86,16 +86,19 @@ React-SPA; позволяет пополнить счет, создать зак
 3.2.1. POST/accounts (создать счет; идемпотентно)
 
 тело: userId={guid}
+
 ответ: 201
 
 3.2.2. GET/accounts/{userId} (баланс счета)
 
 тело: -
+
 ответ: { userId, balance }
 
 3.2.3. POST/accounts/{userId}/top-up (пополнить счет, возвращает новый баланс)
 
 тело: amount=double
+
 ответ: 200; double
 
 
@@ -104,22 +107,26 @@ React-SPA; позволяет пополнить счет, создать зак
 3.3.1. POST/orders (создать заказ; статус = NEW)
 
 тело: { userId, amount, description }
+
 ответ: 200; guid 
 
 
 3.3.2. GET/orders (получение всех заказов)
 
 тело: -
+
 ответ: [{ id, amount, description, status }]
 
 
 3.3.3. GET/orders/{id} (получение деталей заказа)
 
 тело: -
+
 ответ: { ... }
 
 
 4. Доступ к сервисам
+5. 
 По установленным портам по этим URL открываются следующие сервисы:
 
 localhost:3000 - Frontend (Summer Sale Shop)
