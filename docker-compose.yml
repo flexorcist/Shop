@@ -1,0 +1,70 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports: ["15672:15672", "5672:5672"]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  orders-db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: orders
+    ports: ["5432:5432"]
+    volumes: [orders-data:/var/lib/postgresql/data]
+
+  payments-db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: payments
+    ports: ["5433:5432"]
+    volumes: [payments-data:/var/lib/postgresql/data]
+
+  orders:
+    build:
+      context: .
+      dockerfile: Dockerfile.order
+    environment:
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__OrdersDb: Host=orders-db;Port=5432;Username=postgres;Password=postgres;Database=orders
+      Rabbit__Host: rabbitmq
+    ports: ["5001:80"]
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      orders-db:
+        condition: service_started
+    restart: unless-stopped
+
+  payments:
+    build:
+      context: .
+      dockerfile: Dockerfile.payments
+    environment:
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__PaymentsDb: Host=payments-db;Port=5432;Username=postgres;Password=postgres;Database=payments
+      Rabbit__Host: rabbitmq
+    ports: ["5002:80"]
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      payments-db:
+        condition: service_started
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    ports: ["3000:80"]
+    depends_on:
+      orders:   { condition: service_started }
+      payments: { condition: service_started }
+
+volumes:
+  orders-data:
+  payments-data:
